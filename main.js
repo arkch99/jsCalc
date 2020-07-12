@@ -131,6 +131,10 @@ function eqButton()
 		dsp.textContent = val;
 		state.mode = 2; //2 => displaying answer
 	}
+	else
+	{
+		dsp.textContent = 0;
+	}
 	console.log(state);
 }
 
@@ -177,6 +181,43 @@ function decPt()
 	}
 }
 
+function del()
+{
+	let orgDsp = dsp.textContent;
+	dsp.textContent = dsp.textContent.slice(0,-1);
+	if(dsp.textContent == "-")
+	{
+		dsp.textContent = "";
+	}
+	if(!state.mode)
+	{
+		state.firstOperand = dsp.textContent;
+	}
+	if(state.mode == 1)
+	{
+		if(orgDsp == "") //press delete when operator has been entered but not second operand
+		{
+			state.operation = "";
+		}
+		else
+		{
+			if(!state.displayVal) //press delete when displaying first operand
+			{
+				state.mode = 0;
+				state.firstOperand = dsp.textContent;
+			}
+			else
+			{
+				state.nextOperand = dsp.textContent;
+			}
+		}
+	}
+	else if(state.mode == 2)
+	{
+		acButton();
+	}
+}
+
 function init()
 {
 	const numBtns = Array.from(document.querySelectorAll(".num-button"));
@@ -191,6 +232,8 @@ function init()
 	clrBtn.addEventListener("click", acButton);
 	const decPtBtn = document.getElementById("decimal-point");
 	decPtBtn.addEventListener("click", decPt);
+	const delBtn = document.getElementById("del");
+	delBtn.addEventListener("click", del)
 }
 
 init();
