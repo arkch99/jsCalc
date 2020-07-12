@@ -1,7 +1,7 @@
 const dsp = document.querySelector(".display");
 let state = {
-	firstOperand: 0,
-	nextOperand: 0,
+	firstOperand: "",
+	nextOperand: "",
 	operation: "", //holds the operator
 	mode: 0, // 0 -> reading first operand, 1 -> reading second
 	displayVal: 0, //0 => first op, 1 => 2nd op
@@ -12,19 +12,19 @@ function evaluate()
 	let val = 0;
 	if(state.operation == "+")
 	{
-		val = state.firstOperand + state.nextOperand;
+		val = Number(state.firstOperand) + Number(state.nextOperand);
 	}
 	else if(state.operation == "-")
 	{
-		val = state.firstOperand - state.nextOperand;
+		val = Number(state.firstOperand) - Number(state.nextOperand);
 	}
 	else if(state.operation == "*")
 	{
-		val = state.firstOperand * state.nextOperand;
+		val = Number(state.firstOperand) * Number(state.nextOperand);
 	}
 	else if(state.operation == "/")
 	{
-		val = state.firstOperand / state.nextOperand;
+		val = Number(state.firstOperand) / Number(state.nextOperand);
 	}
 	return val;
 }
@@ -34,24 +34,24 @@ function putNumber(e)
 	console.log(e.target.value);
 	if(!state.mode)
 	{
-		let op1 = state.firstOperand.toString();
-		state.firstOperand = Number(op1 + e.target.value);
-		dsp.textContent = state.firstOperand.toString();
+		let op1 = state.firstOperand;
+		state.firstOperand = (op1 + e.target.value).toString();
+		dsp.textContent = state.firstOperand;
 	}
 	else if(state.mode == 1)
 	{
-		let op2 = state.nextOperand.toString();
-		state.nextOperand = Number(op2 + e.target.value);
-		dsp.textContent = state.nextOperand.toString();
+		let op2 = state.nextOperand;
+		state.nextOperand = (op2 + e.target.value).toString();
+		dsp.textContent = state.nextOperand;
 		state.displayVal = 1;
 	}
-	else // number entered while displaying answer
+	else if(state.mode == 2) // number entered while displaying answer
 	{
-		state.firstOperand = Number(e.target.value);
-		state.nextOperand = 0;
+		state.firstOperand = e.target.value.toString();
+		state.nextOperand = "";
 		state.mode = 0;
 		state.displayVal = 0;
-		dsp.textContent = state.firstOperand.toString();
+		dsp.textContent = state.firstOperand;
 	}
 	console.log(state);
 }
@@ -68,13 +68,13 @@ function setOpBin(e) // binary ops
 		state.mode = 1; //read the next operand now
 		state.operation = op;
 	}
-	else
+	else if(state.mode != 3)
 	{
 		if(state.operation != "")
 		{
 			let interValue = evaluate();
-			state.firstOperand = interValue;
-			state.nextOperand = 0;
+			state.firstOperand = interValue.toString();
+			state.nextOperand = "";
 			state.displayVal = 1;
 			dsp.textContent = interValue;
 		}
@@ -85,16 +85,20 @@ function setOpBin(e) // binary ops
 
 function setOpUn(e)
 {
+	if(state.mode == 3)
+	{
+		return;
+	}
 	if(e.target.textContent == "+/-")
 	{
 		if(!state.displayVal) //if displaying first operand
 		{
-			state.firstOperand = -state.firstOperand;
+			state.firstOperand = (-Number(state.firstOperand)).toString();
 			dsp.textContent = state.firstOperand;
 		}
 		else
 		{
-			state.nextOperand = -state.nextOperand;
+			state.nextOperand = (-Number(state.nextOperand)).toString();
 			dsp.textContent = state.nextOperand;
 		}
 	}
@@ -102,14 +106,14 @@ function setOpUn(e)
 	{
 		if(!state.displayVal)
 		{
-			state.firstOperand = Math.sqrt(state.firstOperand);
-			dsp.textContent = state.firstOperand;
+			state.firstOperand = Math.sqrt(Number(state.firstOperand));
+			dsp.textContent = state.firstOperand.toString();
 			state.mode = 2;
 		}
 		else
 		{
-			state.nextOperand = Math.sqrt(state.nextOperand);
-			dsp.textContent = state.nextOperand;
+			state.nextOperand = Math.sqrt(Number(state.nextOperand));
+			dsp.textContent = state.nextOperand.toString();
 			state.mode = 2;
 		}
 	}
@@ -120,8 +124,8 @@ function eqButton()
 	if(state.operation != "")
 	{
 		let val = evaluate();
-		state.firstOperand = val;
-		state.nextOperand = 0;
+		state.firstOperand = val.toString();
+		state.nextOperand = "";
 		state.operation = "";
 		state.displayVal = 0;
 		dsp.textContent = val;
@@ -133,11 +137,44 @@ function eqButton()
 function acButton()
 {
 	dsp.textContent = "";
-	state.firstOperand = 0;
-	state.nextOperand = 0;
+	state.firstOperand = "";
+	state.nextOperand = "";
 	state.operation = "";
 	state.displayVal = 0;
 	state.mode = 0;
+}
+
+function raiseError()
+{
+	dsp.textContent = "ERROR"
+	state.mode = 3;
+}
+
+function decPt()
+{
+	if(dsp.textContent.indexOf(".") != -1 && state.mode != 2) //checks for multiple decimal pts; 2nd condition ensures that an error is not thrown if dispalyed value is the answer of an operation
+	{
+		raiseError();
+		return;
+	}
+	if(!state.mode)
+	{
+		state.firstOperand += ".";
+		dsp.textContent = state.firstOperand;
+	}
+	else if(state.mode == 1)
+	{
+		state.nextOperand += ".";
+		dsp.textContent = state.nextOperand;
+	}
+	else if(state.mode == 2)
+	{
+		state.firstOperand = ".";
+		state.nextOperand = "";
+		state.mode = 0;
+		state.displayVal = 0;
+		dsp.textContent = state.firstOperand;
+	}
 }
 
 function init()
@@ -152,6 +189,8 @@ function init()
 	equalBtn.addEventListener("click", eqButton);
 	const clrBtn = document.getElementById("clear");
 	clrBtn.addEventListener("click", acButton);
+	const decPtBtn = document.getElementById("decimal-point");
+	decPtBtn.addEventListener("click", decPt);
 }
 
 init();
