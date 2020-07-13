@@ -32,22 +32,23 @@ function evaluate()
 function putNumber(e)
 {
 	console.log(e.target.value);
+	let n = e.target.value;
 	if(!state.mode)
 	{
 		let op1 = state.firstOperand;
-		state.firstOperand = (op1 + e.target.value).toString();
+		state.firstOperand = (op1 + n).toString();
 		dsp.textContent = state.firstOperand;
 	}
 	else if(state.mode == 1)
 	{
 		let op2 = state.nextOperand;
-		state.nextOperand = (op2 + e.target.value).toString();
+		state.nextOperand = (op2 + n).toString();
 		dsp.textContent = state.nextOperand;
 		state.displayVal = 1;
 	}
 	else if(state.mode == 2) // number entered while displaying answer
 	{
-		state.firstOperand = e.target.value.toString();
+		state.firstOperand = n.toString();
 		state.nextOperand = "";
 		state.mode = 0;
 		state.displayVal = 0;
@@ -237,6 +238,42 @@ function del()
 	}
 }
 
+function isOperator(str)
+{
+	if(str == "+" || str == "-" || str == "/" || str == "*")
+	{
+		return true;
+	}
+	return false;
+}
+
+function kbInput(e)
+{
+	console.log(e);
+	key = e.key;
+	if(!isNaN(key))
+	{
+		//putNumber(key);
+	}
+	else
+	{
+		if(isOperator(key))
+		{
+			//setOpBin(key);
+		}
+		else if(key == "Enter")
+		{
+			console.log("Enter");
+			console.log(state);
+			eqButton();
+		}
+		else if(key == ".")
+		{
+			decPt();
+		}
+	}
+}
+
 function init()
 {
 	const numBtns = Array.from(document.querySelectorAll(".num-button"));
@@ -252,7 +289,8 @@ function init()
 	const decPtBtn = document.getElementById("decimal-point");
 	decPtBtn.addEventListener("click", decPt);
 	const delBtn = document.getElementById("del");
-	delBtn.addEventListener("click", del)
+	delBtn.addEventListener("click", del);
+	document.addEventListener("keypress", kbInput);
 }
 
 init();
