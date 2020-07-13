@@ -107,12 +107,22 @@ function setOpUn(e)
 		if(!state.displayVal)
 		{
 			state.firstOperand = Math.sqrt(Number(state.firstOperand));
+			if(isNaN(state.firstOperand) || !isFinite(state.firstOperand))
+			{
+				raiseError();
+				return;
+			}
 			dsp.textContent = state.firstOperand.toString();
 			state.mode = 2;
 		}
 		else
 		{
 			state.nextOperand = Math.sqrt(Number(state.nextOperand));
+			if(isNaN(state.nextOperand) || !isFinite(state.nextOperand))
+			{
+				raiseError();
+				return;
+			}
 			dsp.textContent = state.nextOperand.toString();
 			state.mode = 2;
 		}
@@ -124,6 +134,12 @@ function eqButton()
 	if(state.operation != "")
 	{
 		let val = evaluate();
+		//console.log(interValue);
+		if(isNaN(val) || !isFinite(val))
+		{
+			raiseError();
+			return;
+		}
 		state.firstOperand = val.toString();
 		state.nextOperand = "";
 		state.operation = "";
@@ -150,7 +166,7 @@ function acButton()
 
 function raiseError()
 {
-	dsp.textContent = "ERROR"
+	dsp.textContent = "ERROR";
 	state.mode = 3;
 }
 
@@ -184,7 +200,10 @@ function decPt()
 function del()
 {
 	let orgDsp = dsp.textContent;
-	dsp.textContent = dsp.textContent.slice(0,-1);
+	if(state.mode != 3)
+	{
+		dsp.textContent = dsp.textContent.slice(0,-1);
+	}
 	if(dsp.textContent == "-")
 	{
 		dsp.textContent = "";
