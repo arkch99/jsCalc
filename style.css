@@ -1,4 +1,5 @@
 .main-container{
+	background-color: #364658;
 	width: 400px;
 	height: 370px;
 	position: absolute;
@@ -8,10 +9,11 @@
 	text-align: center;
 	padding: 30px 25px 5px 20px;
 	border-style: solid;
+	border-radius: 20px;
 }
 
 .display{
-
+	background-color: powderblue;
 	position: relative;
 	text-align: right;
 	width: 380px;
@@ -68,4 +70,23 @@
 .btn-group button{
 	font-size: 16px;
 	width: 65px;
+	background-color:lightgrey;
+	border-radius:10px;
+	border-style: solid;
+	border-color: black;
+	border-width: 2px;
+}
+
+#del, #clear{
+	background-color: rgb(216, 114, 114);
+	color: white;
+}
+
+#decimal-point{
+	font-weight: 900;
+}
+
+.bin-operator, .un-operator, #equals{
+	font-weight: bolder;
+	color: blue;
 }
