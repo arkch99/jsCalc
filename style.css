@@ -70,11 +70,15 @@
 .btn-group button{
 	font-size: 16px;
 	width: 65px;
-	background-color:lightgrey;
 	border-radius:10px;
 	border-style: solid;
 	border-color: black;
 	border-width: 2px;
+}
+
+.num-button, #decimal-point
+{
+	background-color:lightgrey;
 }
 
 #del, #clear{
@@ -88,5 +92,22 @@
 
 .bin-operator, .un-operator, #equals{
 	font-weight: bolder;
-	color: blue;
+	color: white;
+	background-color: steelblue;
+}
+
+.num-button:hover, #decimal-point:hover
+{
+	color: white;
+	background-color: orange;
+}
+
+.bin-operator:hover, .un-operator:hover, #equals:hover{
+	background-color: turquoise;
+	color: white;
+}
+
+#del:hover, #clear:hover{
+	background-color: red;
+	color: white;
 }
