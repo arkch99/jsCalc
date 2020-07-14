@@ -29,25 +29,28 @@ function evaluate()
 	return val;
 }
 
-function putNumber(e)
+function putNumber(n)
 {
-	console.log(e.target.value);
+	//e.target.blur()
+
+	//console.log(e.target.value);
+	//let n = e.target.value;
 	if(!state.mode)
 	{
 		let op1 = state.firstOperand;
-		state.firstOperand = (op1 + e.target.value).toString();
+		state.firstOperand = (op1 + n).toString();
 		dsp.textContent = state.firstOperand;
 	}
 	else if(state.mode == 1)
 	{
 		let op2 = state.nextOperand;
-		state.nextOperand = (op2 + e.target.value).toString();
+		state.nextOperand = (op2 + n).toString();
 		dsp.textContent = state.nextOperand;
 		state.displayVal = 1;
 	}
 	else if(state.mode == 2) // number entered while displaying answer
 	{
-		state.firstOperand = e.target.value.toString();
+		state.firstOperand = n.toString();
 		state.nextOperand = "";
 		state.mode = 0;
 		state.displayVal = 0;
@@ -56,9 +59,10 @@ function putNumber(e)
 	console.log(state);
 }
 
-function setOpBin(e) // binary ops
+function setOpBin(op) // binary ops
 {
-	let op = e.target.textContent; //hacky
+	//let op = e.target.textContent; //hacky
+	console.log(op);
 	if(state.mode == 2)
 	{
 		state.mode = 1;
@@ -149,7 +153,9 @@ function eqButton()
 	}
 	else
 	{
-		dsp.textContent = 0;
+		//dsp.textContent = 0;
+		state.mode = 2;
+
 	}
 	console.log(state);
 }
@@ -172,6 +178,7 @@ function raiseError()
 
 function decPt()
 {
+	//e.target.blur();
 	if(dsp.textContent.indexOf(".") != -1 && state.mode != 2) //checks for multiple decimal pts; 2nd condition ensures that an error is not thrown if dispalyed value is the answer of an operation
 	{
 		raiseError();
@@ -237,12 +244,65 @@ function del()
 	}
 }
 
+function isOperator(str)
+{
+	if(str == "+" || str == "-" || str == "/" || str == "*")
+	{
+		return true;
+	}
+	return false;
+}
+
+function kbInput(e)
+{
+	e.preventDefault();
+	console.log(e);
+	key = e.key;
+	if(!isNaN(key))
+	{
+		putNumber(key);
+	}
+	else
+	{
+		if(isOperator(key))
+		{
+			setOpBin(key);
+		}
+		else if(key == "Enter")
+		{
+			console.log("Enter");
+			console.log(state);
+			eqButton();
+		}
+		else if(key == ".")
+		{
+			e.target.blur();
+			decPt();
+		}
+	}
+}
+
+function mouseInput(e) //for operators and numbers
+{
+	e.target.blur();
+	let ip = e.target.value;
+	console.log(ip);
+	if(!isNaN(ip))
+	{
+		putNumber(ip);
+	}
+	else
+	{
+		setOpBin(ip);
+	}
+}
+
 function init()
 {
 	const numBtns = Array.from(document.querySelectorAll(".num-button"));
-	numBtns.forEach(btn => btn.addEventListener("click", putNumber));
+	numBtns.forEach(btn => btn.addEventListener("click", mouseInput));
 	const opBtnsBin = Array.from(document.querySelectorAll(".bin-operator")); // for binary operators
-	opBtnsBin.forEach(btn => btn.addEventListener("click", setOpBin));
+	opBtnsBin.forEach(btn => btn.addEventListener("click", mouseInput));
 	const opBtnsUn = Array.from(document.querySelectorAll(".un-operator"));
 	opBtnsUn.forEach(btn => btn.addEventListener("click", setOpUn));
 	const equalBtn = document.getElementById("equals");
@@ -252,7 +312,8 @@ function init()
 	const decPtBtn = document.getElementById("decimal-point");
 	decPtBtn.addEventListener("click", decPt);
 	const delBtn = document.getElementById("del");
-	delBtn.addEventListener("click", del)
+	delBtn.addEventListener("click", del);
+	document.addEventListener("keypress", kbInput);
 }
 
 init();
